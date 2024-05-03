@@ -1,0 +1,4 @@
+function generateRoomCode() {
+    // creating code
+}
+
