@@ -5,8 +5,12 @@ const uuidv4=require('uuid').v4
 
 const server =http.createServer()
 
-const wsServer=new WebSocketServer({server})
-const port =8000
+
+
+const roomCodes = ["RST" , "PQR"]
+const wsServer=new WebSocketServer({server , path : "/RST"})
+const port = 3000
+const rooms = {}
 const connections={}
 const users={}
 
@@ -34,6 +38,7 @@ const handleMessege=(byte,uuid)=>{
 wsServer.on('connection',(connection,request)=>{
     const {username}=url.parse(request.url,true).query
     const uuid=uuidv4()
+    console.log(request.url)
     console.log(`User ${username} connected`)
     connections[uuid]=connection
     users[uuid]={

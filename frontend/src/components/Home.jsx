@@ -19,6 +19,7 @@ const RoomComponent = () => {
 
   const createRoom = () => {
  
+    const roomCode = generateRoomCode()
     
     console.log(`Creating room ${roomName} with host ${name}`);
   };

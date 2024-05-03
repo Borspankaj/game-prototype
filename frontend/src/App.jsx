@@ -12,15 +12,6 @@ function App() {
   return (
     <>
     <Home />
-    <input type="text" placeholder="Enter your name" />
-
-    <input type="text" placeholder="Enter game code" />
-
-    <button onClick={handlejoin}>Join Game</button>
-    <button onclick={createGame}>Create Game</button>
-
-
-  
     </>
   )
 }
