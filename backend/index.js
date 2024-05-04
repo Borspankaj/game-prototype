@@ -74,5 +74,5 @@ const creatingRoom = (server) => {
 
     })
 }
-module.exports = {creatingRoom}
+module.exports = {creatingRoom,getRooms}
 

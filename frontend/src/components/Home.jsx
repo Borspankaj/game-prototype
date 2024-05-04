@@ -3,6 +3,7 @@ import { generateRoomCode } from '../utils/roomCode'
 import {useNavigate} from 'react-router-dom'
 
 const RoomComponent = () => {
+
   const navigate=useNavigate()
   const [name, setName] = useState('');
   const [roomName, setRoomName] = useState('');
@@ -22,6 +23,7 @@ const RoomComponent = () => {
   };
 
   const createRoom = () => {
+
     navigate(`/r/${generateRoomCode()}`, { state: { username: name } })
     
   };

@@ -1,0 +1,4 @@
+const getRooms=()=>{
+    return rooms;
+
+}

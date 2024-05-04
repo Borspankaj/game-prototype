@@ -23,6 +23,8 @@ app.get('/r' , (req, res) => {
   
 })
 creatingRoom(server)
+app.get("/rooms",(req,res)=>{
+})
 
 
 
