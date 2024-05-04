@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { generateRoomCode } from '../utils/roomCode'
+import {useNavigate} from 'react-router-dom'
 
 const RoomComponent = () => {
+  const navigate=useNavigate()
   const [name, setName] = useState('');
   const [roomName, setRoomName] = useState('');
 
@@ -14,14 +17,13 @@ const RoomComponent = () => {
 
   const joinRoom = () => {
     
+    navigate(`/r/${roomName}`, { state: { username: name } })
     console.log(`Joining room ${roomName} as ${name}`);
   };
 
   const createRoom = () => {
- 
-    const roomCode = generateRoomCode()
+    navigate(`/r/${generateRoomCode()}`, { state: { username: name } })
     
-    console.log(`Creating room ${roomName} with host ${name}`);
   };
 
   return (
@@ -45,6 +47,10 @@ const RoomComponent = () => {
       <br />
       <button onClick={joinRoom}>Join Room</button>
       <button onClick={createRoom}>Create Room</button>
+
+      <div>
+        <button>get Rooms</button>
+      </div>
     </div>
   );
 };

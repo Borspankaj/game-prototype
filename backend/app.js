@@ -6,17 +6,23 @@ const http = require('http');
 const url = require('url');
 const {WebSocketServer} = require('ws');
 const uuidv4=require('uuid').v4
+const cors = require('cors')
+const {creatingRoom} = require('./index')
+
+app.use(cors())
 
 const server =http.createServer()
 
 
-app.get('/room' , (req, res) => {
+app.get('/r' , (req, res) => {
   console.log(req.query.username)
   const username = req.query.username;
-  const roomCode = generateRandomCode()
-  res.send(`ello ${username} room code : ${roomCode}`)
-
+  const roomCode=req.query.roomcode
+  // const roomCode = generateRandomCode()
+  res.send(`Hello ${username} room code : ${roomCode}`)
+  
 })
+creatingRoom(server)
 
 
 

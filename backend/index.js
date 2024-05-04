@@ -3,60 +3,76 @@ const url = require('url');
 const {WebSocketServer} = require('ws');
 const uuidv4=require('uuid').v4
 
-const server =http.createServer()
 
-
-
-const roomCodes = ["RST" , "PQR"]
-const wsServer=new WebSocketServer({server , path : "/RST"})
-const port = 3000
 const rooms = {}
-const connections={}
-const users={}
 
-server.listen(port,()=>console.log(`Server is listening on port ${port}`))
+const getRooms = () => {
+    return rooms;
+}
+const creatingRoom = (server) => {
+    const wsServer=new WebSocketServer({server , path : `/r`})
 
-const broadcast=()=>{
-    Object.keys(connections).forEach((uuid)=>{
-        const connection=connections[uuid]
-        const message=JSON.stringify(users)
-        connection.send(message)
-        console.log(message)
-        
+    server.listen(3001,()=>{
+        console.log('listening on port 3001')
     })
-}
 
-const handleMessege=(byte,uuid)=>{
-    const message=JSON.parse(byte.toString())
-    
-    console.log(message)
-    users[uuid].state=message
-    broadcast()
-}
-
-
-wsServer.on('connection',(connection,request)=>{
-    const {username}=url.parse(request.url,true).query
-    const uuid=uuidv4()
-    console.log(request.url)
-    console.log(`User ${username} connected`)
-    connections[uuid]=connection
-    users[uuid]={
-        username:username,
-        state:{
-            message:""
-        }
+    const broadcast=(roomCode)=>{
+        const message = JSON.stringify(rooms[roomCode].users);
+        rooms[roomCode].connections.forEach((connection) => {
+            connection.send(message);
+        });
     }
-    connection.on('open',()=>console.log('Connection opened'))
-    connection.on('message',(byte)=>handleMessege(byte,uuid))
-    connection.on('close',()=>{
-        delete connections[uuid]
-        delete users[uuid]
-        broadcast()
+
+    const handleMessege=(byte,uuid,roomCode)=>{
+        const message=JSON.parse(byte.toString())
+        console.log(message);
+        rooms[roomCode].users[uuid].state = message;
+        console.log(roomCode,'roomcode')
+        broadcast(roomCode)
+    }
+
+
+    wsServer.on('connection',(connection,request)=>{
+        console.log('connected')
+        const { query } = url.parse(request.url, true);
+       
+        const roomCode = query.roomCode
+        const username = query.username;
+        const uuid = uuidv4();
+        if (username ===undefined){
+
+        }
+        if (!rooms[roomCode]) {
+            rooms[roomCode] = {
+                connections: [],
+                users: {
+                    
+                }
+            };
+        }
+        rooms[roomCode].connections.push(connection);
+
+        rooms[roomCode].users[uuid] = {
+            username: username ,
+            state: {
+                message: ""
+            }
+        };
+        broadcast(roomCode);
+        connection.on('message', (byte) => handleMessege(byte, uuid, roomCode));
+
+        connection.on('close', () => {
+            
+            delete rooms[roomCode].connections[rooms[roomCode].connections.indexOf(connection)];
+            delete rooms[roomCode].users[uuid];
+            if (rooms[roomCode].users.length === 0 ){
+                delete rooms[roomCode];
+            }
+            broadcast(roomCode);
+        });
+
+
     })
-
-
-})
-
-
+}
+module.exports = {creatingRoom}
 
