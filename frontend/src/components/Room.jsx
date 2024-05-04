@@ -37,7 +37,7 @@ const Room = () => {
                 </p>
                 </div>
         })}
-        
+        <button>Start</button>
 
     </div>
   )

@@ -58,6 +58,7 @@ const creatingRoom = (server) => {
                 message: ""
             }
         };
+        console.log(Object.keys(rooms[roomCode].users).length)
         broadcast(roomCode);
         connection.on('message', (byte) => handleMessege(byte, uuid, roomCode));
 
@@ -65,10 +66,12 @@ const creatingRoom = (server) => {
             
             delete rooms[roomCode].connections[rooms[roomCode].connections.indexOf(connection)];
             delete rooms[roomCode].users[uuid];
-            if (rooms[roomCode].users.length === 0 ){
+            if (Object.keys(rooms[roomCode].users).length === 0 ){
                 delete rooms[roomCode];
+                console.log(roomCode)
+                
             }
-            broadcast(roomCode);
+            else broadcast(roomCode);
         });
 
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { generateRoomCode } from '../utils/roomCode'
 import {useNavigate} from 'react-router-dom'
-
+import { checkValidRoom } from '../services/roomService';
 const RoomComponent = () => {
 
   const navigate=useNavigate()
@@ -17,9 +17,15 @@ const RoomComponent = () => {
   };
 
   const joinRoom = () => {
+    fetch(`http://localhost:3000/authenticate-room?room=${roomName}`).
+    then((response) => {
+      if(response.status === 200)
+        navigate(`/r/${roomName}`, { state: { username: name } })
+
+    }).catch(function(error) {
+      console.log(error);
+    });
     
-    navigate(`/r/${roomName}`, { state: { username: name } })
-    console.log(`Joining room ${roomName} as ${name}`);
   };
 
   const createRoom = () => {

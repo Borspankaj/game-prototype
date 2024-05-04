@@ -1,13 +1,10 @@
 const express = require('express')
 const app = express()
 const port = 3000
-const {generateRandomCode} = require('./utils/roomCode')
 const http = require('http');
-const url = require('url');
-const {WebSocketServer} = require('ws');
-const uuidv4=require('uuid').v4
 const cors = require('cors')
-const {creatingRoom} = require('./index')
+const {creatingRoom} = require('./index');
+const { checkRoom } = require('./middlewares/auth');
 
 app.use(cors())
 
@@ -23,7 +20,20 @@ app.get('/r' , (req, res) => {
   
 })
 creatingRoom(server)
-app.get("/rooms",(req,res)=>{
+app.get("/authenticate-room",(req,res)=>{
+
+  
+  const roomCode = req.query.room;
+  const isValid = checkRoom(roomCode)
+  console.log(111)
+  if (isValid) {
+    res.status(200)
+    res.send("success")
+  }
+  res.status(403)
+  res.send("invalid")
+
+
 })
 
 
