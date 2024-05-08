@@ -5,10 +5,13 @@ const http = require('http');
 const cors = require('cors')
 const {creatingRoom} = require('./index');
 const { checkRoom } = require('./middlewares/auth');
+const { initializeDatabase }  = require('./database/dbconnect');
 
 app.use(cors())
 
-const server =http.createServer()
+const server = http.createServer()
+
+initializeDatabase()
 
 
 app.get('/r' , (req, res) => {
