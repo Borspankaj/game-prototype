@@ -27,19 +27,7 @@ function storeWords(firebaseApp) {
 
 }
 
-function extractRandom(firebaseApp) {
-    var randomWord = ''
-    firebaseApp.ref("words").once('value' , (snapshot) => {
-        
-        const words = []
-        snapshot.forEach((childSnap => {
-            words.push(childSnap.val())
-        }))
-        const randomIndex = Math.floor(Math.random() * words[0].length); 
-        randomWord =  words[0][randomIndex]
-    })
-    return randomWord
-}
+
 
 module.exports = {
     storeWords ,

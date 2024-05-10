@@ -14,17 +14,17 @@ const firebaseConfig = {
 };
 
 
-const db = initializeApp(firebaseConfig);
-const firebaseApp = db.database()
+const firebaseApp = initializeApp(firebaseConfig);
+const db = firebaseApp.database()
 
 function initializeDatabase() {
     // storeWords(firebaseApp)
-    console.log(extractRandom(firebaseApp))
+    // console.log(extractRandom(firebaseApp))
 }
 
 
 module.exports = {
     initializeDatabase ,
-    firebaseApp 
+    db
 
 }

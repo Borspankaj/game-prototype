@@ -5,7 +5,9 @@ const http = require('http');
 const cors = require('cors')
 const {creatingRoom} = require('./index');
 const { checkRoom } = require('./middlewares/auth');
-const { initializeDatabase }  = require('./database/dbconnect');
+const { initializeDatabase, db }  = require('./database/dbconnect');
+const roomRouter = require('./routes/room/room.router')
+
 
 app.use(cors())
 
@@ -14,14 +16,8 @@ const server = http.createServer()
 initializeDatabase()
 
 
-app.get('/r' , (req, res) => {
-  console.log(req.query.username)
-  const username = req.query.username;
-  const roomCode=req.query.roomcode
-  // const roomCode = generateRandomCode()
-  res.send(`Hello ${username} room code : ${roomCode}`)
-  
-})
+app.use('/room' , roomRouter)
+
 creatingRoom(server)
 app.get("/authenticate-room",(req,res)=>{
 

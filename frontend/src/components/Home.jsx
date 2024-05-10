@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { generateRoomCode } from '../utils/roomCode'
 import {useNavigate} from 'react-router-dom'
 import { checkValidRoom } from '../services/roomService';
+import { v4 as uuid } from 'uuid';
 const RoomComponent = () => {
 
   const navigate=useNavigate()
@@ -17,10 +18,10 @@ const RoomComponent = () => {
   };
 
   const joinRoom = () => {
-    fetch(`http://localhost:3000/authenticate-room?room=${roomName}`).
+    fetch(`http://192.168.1.9:3000/authenticate-room?room=${roomName}`).
     then((response) => {
       if(response.status === 200)
-        navigate(`/r/${roomName}`, { state: { username: name } })
+        navigate(`/r/${roomName}`, { state: { username: name,id:uuid() } })
 
     }).catch(function(error) {
       console.log(error);
@@ -30,7 +31,7 @@ const RoomComponent = () => {
 
   const createRoom = () => {
 
-    navigate(`/r/${generateRoomCode()}`, { state: { username: name } })
+    navigate(`/r/${generateRoomCode()}`, { state: { username: name,id:uuid() } })
     
   };
 

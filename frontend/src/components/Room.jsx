@@ -1,43 +1,77 @@
-import React from 'react'
+import {React,useEffect,useState} from 'react'
 import { json, useLocation, useParams } from 'react-router-dom'
 import  useWebSocket  from 'react-use-websocket'
+import {v4 as uuid} from 'uuid'
 
 const Room = () => {
     const roomid=useParams().roomId
     const username=useLocation().state.username
-    const URL=`ws://localhost:3001/r`
-    const [message,setMessage]=React.useState('')
+    const host=window.location.hostname
+    const URL=host+':3001/r'
+    console.log(URL)
+    const [id,setId]=useState(useLocation().state.id)
+    const [userDetails,setUserDetails]=useState()
+
     
-    const client=useWebSocket(URL,{
-        queryParams:{username:username,roomCode:roomid}
+    
+    const client=useWebSocket('ws://'+URL,{
+        queryParams:{username:username,roomCode:roomid,uuid:id}
     })
+
     const me=client.lastJsonMessage
 
+    useEffect
+    (()=>{
+        
+        // console.log(me[id].state,'here')
+        setUserDetails({
+            ...userDetails,
+            
+            randomWord:me&&me.randomWord
+        })
+    },[me])
+    useEffect(()=>{
+        setUserDetails({
+            usename:username,
+            id:id,
+            randomWord:(me&&me.randomWord)|| '',
+        })
+    },[])
 
+    
     return (
     <div>
-        <h1>Room {roomid}</h1>
-        <input onChange={
+        <h1>Room: {roomid}</h1>
+        <h2>Username: {username}</h2>
+        {/* <input onChange={
             (e)=>{
                 setMessage(e.target.value)
             }
 
-        } type="text" placeholder="Enter message" value={message}/>
+        } type="text" placeholder="Enter message" value={message}/> */}
+
         <button onClick={
-            ()=>{
-                client.sendJsonMessage({message:message})
+            async()=>{
+                fetch(`http://${host}:3000/room`).
+                then((res)=>res.json()).
+                then((data)=>{
+                    client.sendJsonMessage({message:data.data,type:'randomWord'})
+                }).catch((err)=>console.log(err))
             }
         
-        }>Send</button>
-        {me && Object.keys(me).map((key)=>{
+        }>Start</button>
+        
+        <p>{userDetails && userDetails.randomWord}</p>
+
+        {me && Object.keys(me.users).map((key)=>{
             return <div key={key}>
                 <p>
-                 {me[key].username} 
-                 {me[key].state.message}
+                 {me.users[key].username}
+                 
                 </p>
                 </div>
         })}
-        <button>Start</button>
+        <h1></h1>
 
     </div>
   )
