@@ -1,22 +1,22 @@
 import {React,useEffect,useState} from 'react'
 import { json, useLocation, useParams } from 'react-router-dom'
 import  useWebSocket  from 'react-use-websocket'
-import {v4 as uuid} from 'uuid'
+import { wshost,httphost } from '../services/getHost'
+
+import Penciltool from './PencilTool'
+import WebSocketStart from '../websocket/WebSocket'
 
 const Room = () => {
     const roomid=useParams().roomId
     const username=useLocation().state.username
     const host=window.location.hostname
-    const URL=host+':3001/r'
-    console.log(URL)
+    
     const [id,setId]=useState(useLocation().state.id)
     const [userDetails,setUserDetails]=useState()
-
+    const client=WebSocketStart(username,roomid,id)
     
     
-    const client=useWebSocket('ws://'+URL,{
-        queryParams:{username:username,roomCode:roomid,uuid:id}
-    })
+    
 
     const me=client.lastJsonMessage
 
@@ -41,6 +41,13 @@ const Room = () => {
     
     return (
     <div>
+        <div className="App">
+        <Penciltool 
+        client={client}
+        username={username}
+        />
+
+        </div>
         <h1>Room: {roomid}</h1>
         <h2>Username: {username}</h2>
         {/* <input onChange={
@@ -52,7 +59,7 @@ const Room = () => {
 
         <button onClick={
             async()=>{
-                fetch(`http://${host}:3000/room`).
+                fetch(`${httphost}/room`).
                 then((res)=>res.json()).
                 then((data)=>{
                     client.sendJsonMessage({message:data.data,type:'randomWord'})

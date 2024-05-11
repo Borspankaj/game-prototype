@@ -8,7 +8,7 @@ const RoomComponent = () => {
   const navigate=useNavigate()
   const [name, setName] = useState('');
   const [roomName, setRoomName] = useState('');
-
+  const host=window.location.hostname
   const handleNameChange = (e) => {
     setName(e.target.value);
   };
@@ -18,7 +18,7 @@ const RoomComponent = () => {
   };
 
   const joinRoom = () => {
-    fetch(`http://192.168.1.9:3000/authenticate-room?room=${roomName}`).
+    fetch(`http://${host}:3000/authenticate-room?room=${roomName}`).
     then((response) => {
       if(response.status === 200)
         navigate(`/r/${roomName}`, { state: { username: name,id:uuid() } })

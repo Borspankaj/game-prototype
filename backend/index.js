@@ -18,8 +18,8 @@ const creatingRoom = (server) => {
     })
 
     const broadcast=(roomCode)=>{
-        const message = JSON.stringify({users:rooms[roomCode].users,randomWord : rooms[roomCode].randomWord});
-        console.log(message,'here')
+        const message = JSON.stringify({users:rooms[roomCode].users,randomWord : rooms[roomCode].randomWord,points:rooms[roomCode].points});
+        
         rooms[roomCode].connections.forEach((connection) => {
             connection.send(message);
         });
@@ -29,11 +29,15 @@ const creatingRoom = (server) => {
     const handleMessege=(byte,uuid,roomCode)=>{
         const message=JSON.parse(byte.toString())
 
+        console.log('here2',message)
         // console.log(message);
         if(message.type==='randomWord'){
             // rooms[roomCode].users[uuid].state.randomword = message.message;
             rooms[roomCode].randomWord=message.message
             
+        }
+        if(message.type==='points'){
+            rooms[roomCode].points=message.message
         }
         // rooms[roomCode].users[uuid].state = message;
         // console.log(roomCode,'roomcode')
@@ -59,7 +63,8 @@ const creatingRoom = (server) => {
                 users: {
                     
                 },
-                randomWord:''
+                randomWord:'',
+                points:{}
             };
         }
         rooms[roomCode].connections.push(connection);

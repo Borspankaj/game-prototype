@@ -31,5 +31,4 @@ function storeWords(firebaseApp) {
 
 module.exports = {
     storeWords ,
-    extractRandom
 }
