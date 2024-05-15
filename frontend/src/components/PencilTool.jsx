@@ -1,6 +1,185 @@
+// import rough from "roughjs/bundled/rough.esm";
+// import { useEffect, useState, useRef, useCallback } from "react";
+// import throttle from 'lodash/throttle'; // lodash throttle for event handling optimization
+
+// const midPointBtw = (p1, p2) => {
+//   return {
+//     x: p1.x + (p2.x - p1.x) / 2,
+//     y: p1.y + (p2.y - p1.y) / 2,
+//   };
+// };
+
+// export const adjustElementCoordinates = (element) => {
+//   const { type, x1, y1, x2, y2 } = element;
+//   if (x1 < x2 || (x1 === x2 && y1 < y2)) {
+//     return { x1, y1, x2, y2 };
+//   } else {
+//     return { x1: x2, y1: y2, x2: x1, y2: y1 };
+//   }
+// };
+
+// function App({ client, username }) {
+//   const msg = client.lastJsonMessage;
+//   const [elements, setElements] = useState([]);
+//   const [isDrawing, setIsDrawing] = useState(false);
+//   const [points, setPoints] = useState([]);
+//   const [path, setPath] = useState([]);
+//   const [action, setAction] = useState("none");
+//   const [toolType, setToolType] = useState("pencil"); // State to manage tool type
+//   const [selectedElement, setSelectedElement] = useState(null);
+//   const canvasRef = useRef(null);
+
+//   useEffect(() => {
+//     const canvas = canvasRef.current;
+//     const context = canvas.getContext("2d");
+//     context.lineCap = "round";
+//     context.lineJoin = "round";
+//     context.save();
+
+//     const drawPath = () => {
+//       path.forEach((stroke) => {
+//         context.beginPath();
+//         stroke.forEach((point, i) => {
+//           var midPoint = midPointBtw(point.clientX, point.clientY);
+//           context.quadraticCurveTo(point.clientX, point.clientY, midPoint.x, midPoint.y);
+//           context.lineTo(point.clientX, point.clientY);
+//           context.stroke();
+//         });
+//         context.closePath();
+//         context.save();
+//       });
+//     };
+
+//     const roughCanvas = rough.canvas(canvas);
+//     if (path !== undefined) drawPath();
+
+//     elements.forEach(({ roughEle }) => {
+//       context.globalAlpha = "1";
+//       roughCanvas.draw(roughEle);
+//     });
+
+//     return () => {
+//       context.clearRect(0, 0, canvas.width, canvas.height);
+//     };
+//   }, [elements, path]);
+
+//   useEffect(() => {
+//     client.sendJsonMessage({ message: { clientX: 0, clientY: 0 }, type: 'points', event: 'initial' });
+//   }, []);
+
+//   useEffect(() => {
+//     if (msg) {
+//       console.log(msg.tool)
+
+//       if (msg.type === 'tool') {
+//         console.log('changed')
+//         setToolType(msg.message);
+        
+//       }else{
+
+//         const canvas = canvasRef.current;
+//         const context = canvas.getContext("2d");
+        
+//         if (msg.event === 'mousedown') {
+//           setAction("sketching");
+//           setIsDrawing(true);
+//           const { clientX, clientY } = msg.points;
+//           const newEle = { clientX, clientY };
+//           setPoints((state) => [...state, newEle]);
+//           context.lineCap = 5;
+//           context.moveTo(clientX, clientY);
+//           context.beginPath();
+//         }
+        
+//         if (msg.event === 'mousemove') {
+//           if (action === "sketching" && isDrawing) {
+//             const { clientX, clientY } = msg.points;
+//             const newEle = { clientX, clientY };
+//             setPoints((state) => [...state, newEle]);
+            
+//             if (toolType === "pencil") {
+//               var midPoint = midPointBtw(clientX, clientY);
+//               context.quadraticCurveTo(clientX, clientY, midPoint.x, midPoint.y);
+//             context.lineTo(clientX, clientY);
+//             context.stroke();
+//           } else if (toolType === "eraser") {
+//             context.clearRect(clientX - 10, clientY - 10, 20, 20); // Erasing a small rectangle
+//           }
+//         }
+//       }
+      
+//       if (msg.event === 'mouseup') {
+//         context.closePath();
+//         if (toolType === "pencil") {
+//           const element = points;
+//           setPoints([]);
+//           setPath((prevState) => [...prevState, element]);
+//         }
+//         setIsDrawing(false);
+//       }
+//     }
+//     }
+//   }, [msg]);
+
+//   const updateElement = (index, x1, y1, x2, y2, toolType) => {
+//     const updatedElement = createElement(index, x1, y1, x2, y2, toolType);
+//     const elementsCopy = [...elements];
+//     elementsCopy[index] = updatedElement;
+//     setElements(elementsCopy);
+//   };
+
+//   const handleMouseDown = (e) => {
+//     const { clientX, clientY } = e;
+//     client.sendJsonMessage({ message: { clientX, clientY }, type: 'points', event: 'mousedown'});
+//   };
+
+//   const handleMouseMove = useCallback(
+//     throttle((e) => {
+//       const { clientX, clientY } = e;
+//       client.sendJsonMessage({ message: { clientX, clientY }, type: 'points', event: 'mousemove' });
+//     }, 5), []
+//   );
+
+//   const handleMouseUp = (e) => {
+//     const { clientX, clientY } = e;
+//     client.sendJsonMessage({ message: { clientX, clientY }, type: 'points', event: 'mouseup'});
+//   };
+
+//   return (
+//     <div>
+//       <div>
+//         <button onClick={() =>{
+//           client.sendJsonMessage({message:'pencil',type:'tool'})
+//         } }>Pencil</button>
+//         <button onClick={() => {
+//           client.sendJsonMessage({ message: 'eraser', type: 'tool' })
+//         }}>Eraser</button>
+//       </div>
+//       <canvas
+//         id="canvas"
+//         ref={canvasRef}
+//         className="App"
+//         width={400}
+//         height={300}
+//         onMouseDown={handleMouseDown}
+//         onMouseMove={handleMouseMove}
+//         onMouseUp={handleMouseUp}
+//       >
+//         Canvas
+//       </canvas>
+//     </div>
+//   );
+// }
+
+// export default App;
+
+
+
+
 import rough from "roughjs/bundled/rough.esm";
 import { useEffect, useState, useRef, useCallback } from "react";
 import throttle from 'lodash/throttle'; // lodash throttle for event handling optimization
+import './canvas.css'
 
 const midPointBtw = (p1, p2) => {
   return {
@@ -121,7 +300,7 @@ function App({ client, username }) {
     throttle((e) => {
       const { clientX, clientY } = e;
       client.sendJsonMessage({ message: { clientX: clientX, clientY: clientY }, type: 'points', event: 'mousemove', action: 'sketching', isdrawing: true });
-    }, 50), []
+    }, 5), []
   );
 
   const handleMouseUp = (e) => {
@@ -130,12 +309,12 @@ function App({ client, username }) {
   };
 
   return (
-    <div>
+    <div className="App">
       <canvas
         id="canvas"
         ref={canvasRef}
-        className="App"
-        width={400}
+        
+        width={innerWidth}
         height={300}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

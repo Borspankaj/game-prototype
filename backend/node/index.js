@@ -29,14 +29,18 @@ const creatingRoom = (server) => {
     const handleMessege=(byte,uuid,roomCode)=>{
         const message=JSON.parse(byte.toString())
 
-        console.log('here2',message)
+        // console.log('here2',message)
         // console.log(message);
-        if(message.type==='randomWord'){
+        if (message.type=='tool'){
+            rooms[roomCode].tool=message.message
+        }
+        else if(message.type==='randomWord'){
             // rooms[roomCode].users[uuid].state.randomword = message.message;
             rooms[roomCode].randomWord=message.message
             
         }
-        if(message.type==='points' || message.event==='initial'){
+        
+        else if(message.type==='points' || message.event==='initial'){
             rooms[roomCode].points=message.message
             rooms[roomCode].event=message.event
         }
@@ -65,6 +69,7 @@ const creatingRoom = (server) => {
                     
                 },
                 randomWord:'',
+                tool:'pencil'
 
             };
         }
